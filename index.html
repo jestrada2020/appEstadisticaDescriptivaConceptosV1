@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Estadística Completa con Gráficas Avanzadas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Sidebar Toggle Button (Mobile) -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2 class="text-xl font-bold">
+                <i class="fas fa-chart-bar mr-2"></i>
+                Estadística Descriptiva
+            </h2>
+            <p class="text-sm text-gray-200 mt-2">Análisis y Visualización</p>
+        </div>
+        
+        <nav class="sidebar-menu">
+            <a class="menu-item active" onclick="showSection('input-section')" id="menu-input">
+                <i class="fas fa-keyboard menu-icon"></i>
+                Ingreso de Datos
+            </a>
+            <a class="menu-item" onclick="showSection('frequency-comparison-section')" id="menu-frequency-comparison">
+                <i class="fas fa-table menu-icon"></i>
+                Tablas de Frecuencia
+            </a>
+            <a class="menu-item" onclick="showSection('stats-section')" id="menu-stats">
+                <i class="fas fa-info-circle menu-icon"></i>
+                Estadísticas Básicas
+            </a>
+            <a class="menu-item" onclick="showSection('quartiles-section')" id="menu-quartiles">
+                <i class="fas fa-chart-line menu-icon"></i>
+                Cuartiles y Outliers
+            </a>
+            <a class="menu-item" onclick="showSection('frequency-section')" id="menu-frequency">
+                <i class="fas fa-table menu-icon"></i>
+                Tabla de Frecuencias
+            </a>
+            <a class="menu-item" onclick="showSection('histogram-section')" id="menu-histogram">
+                <i class="fas fa-chart-bar menu-icon"></i>
+                Histograma
+            </a>
+            <a class="menu-item" onclick="showSection('boxplot-section')" id="menu-boxplot">
+                <i class="fas fa-box menu-icon"></i>
+                Gráfico de Caja
+            </a>
+            <a class="menu-item" onclick="showSection('combined-section')" id="menu-combined">
+                <i class="fas fa-layer-group menu-icon"></i>
+                Gráfica Combinada
+            </a>
+            <a class="menu-item" onclick="showSection('overlapping-section')" id="menu-overlapping">
+                <i class="fas fa-chart-area menu-icon"></i>
+                Gráfica Superpuesta
+            </a>
+            <a class="menu-item" onclick="showSection('polygon-section')" id="menu-polygon">
+                <i class="fas fa-chart-line menu-icon"></i>
+                Polígono de Frecuencias
+            </a>
+            <a class="menu-item" onclick="showSection('quartile-tutorial-section')" id="menu-quartile-tutorial">
+                <i class="fas fa-graduation-cap menu-icon"></i>
+                Cálculo de Cuartiles
+            </a>
+            <a class="menu-item" onclick="showSection('pie-chart-section')" id="menu-pie-chart">
+                <i class="fas fa-chart-pie menu-icon"></i>
+                Gráfico de Torta
+            </a>
+            <a class="menu-item" onclick="showSection('dispersion-theory-section')" id="menu-dispersion-theory">
+                <i class="fas fa-expand-arrows-alt menu-icon"></i>
+                Teoría de Dispersión
+            </a>
+            <a class="menu-item" onclick="showSection('river-simulation-section')" id="menu-river-simulation">
+                <i class="fas fa-water menu-icon"></i>
+                Simulación del Río
+            </a>
+            <a class="menu-item" onclick="showSection('all-sections')" id="menu-all">
+                <i class="fas fa-th-large menu-icon"></i>
+                Ver Todo
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="max-w-7xl mx-auto p-4">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-center text-blue-800 mb-2">
+                <i class="fas fa-chart-bar mr-3"></i>Calculadora Estadística Completa
+            </h1>
+            <p class="text-center text-gray-600">Análisis descriptivo con histograma, boxplot y gráficas combinadas</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="section-content active" id="input-section">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-keyboard mr-2"></i>Ingreso de Datos
+                </h2>
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Datos (separados por comas, espacios o saltos de línea):
+                        </label>
+                        <textarea id="dataInput" 
+                                  class="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Ejemplo: 12, 15, 18, 22, 25, 28, 30, 35, 40, 45, 50, 60, 75, 80, 120"></textarea>
+                    </div>
+                    <div class="flex flex-col justify-end gap-2">
+                        <button onclick="calculateStatistics()" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-300">
+                            <i class="fas fa-calculator mr-2"></i>Calcular
+                        </button>
+                        <button onclick="clearData()" 
+                                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition duration-300">
+                            <i class="fas fa-trash mr-2"></i>Limpiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="hidden">
+            <!-- Frequency Tables Comparison -->
+            <div class="section-content" id="frequency-comparison-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-800">
+                        <i class="fas fa-table mr-2"></i>4. Tablas de Frecuencia
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Simple Frequency Table -->
+                        <div class="bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                <i class="fas fa-list mr-2"></i>Tabla de Frecuencias Simple
+                            </h3>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-700 mb-2">
+                                    <span class="font-semibold">Ejemplo:</span> <span id="simple-example-text">Ingrese datos para ver el ejemplo</span>
+                                </p>
+                                <div id="simple-data-display" class="bg-white p-2 rounded border text-sm font-mono">
+                                    Datos aparecerán aquí
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table id="simple-frequency-table" class="w-full border-collapse border border-gray-300 text-sm">
+                                    <thead class="bg-purple-100">
+                                        <tr>
+                                            <th class="border border-gray-300 px-2 py-1">Valor (X)</th>
+                                            <th class="border border-gray-300 px-2 py-1">Frecuencia (f)</th>
+                                            <th class="border border-gray-300 px-2 py-1">Frecuencia Relativa (fr)</th>
+                                            <th class="border border-gray-300 px-2 py-1">Frecuencia Acumulada (F)</th>
+                                            <th class="border border-gray-300 px-2 py-1">Frecuencia Relativa Acumulada (Fr)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="simple-frequency-body">
+                                        <tr>
+                                            <td colspan="5" class="border border-gray-300 px-2 py-2 text-center text-gray-500">
+                                                Ingrese datos para generar la tabla
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Simple Table Interpretation -->
+                            <div class="bg-blue-50 p-3 rounded-lg mt-4 border border-blue-200">
+                                <h4 class="font-semibold text-blue-800 mb-2">
+                                    <i class="fas fa-search mr-1"></i>Interpretación de la Tabla
+                                </h4>
+                                <ul class="text-xs text-gray-700 space-y-1">
+                                    <li><span class="font-semibold text-blue-600">• Frecuencia (f):</span> Número de veces que aparece cada valor</li>
+                                    <li><span class="font-semibold text-blue-600">• Frecuencia Relativa (fr):</span> Proporción de cada valor respecto al total</li>
+                                    <li><span class="font-semibold text-blue-600">• Frecuencia Acumulada (F):</span> Suma acumulativa de frecuencias</li>
+                                    <li><span class="font-semibold text-blue-600">• Frecuencia Relativa Acumulada (Fr):</span> Proporción acumulativa</li>
+                                </ul>
+                                <div class="bg-blue-100 p-2 rounded mt-2">
+                                    <div class="text-xs font-semibold text-blue-800" id="simple-interpretation">
+                                        Ejemplo de interpretación: Los cálculos aparecerán aquí
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grouped Frequency Table -->
+                        <div class="bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                <i class="fas fa-layer-group mr-2"></i>Tabla de Frecuencias por Clases
+                            </h3>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-700 mb-2">
+                                    <span class="font-semibold">Ejemplo:</span> <span id="grouped-example-text">Datos agrupados en intervalos de clase</span>
+                                </p>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table id="grouped-frequency-table" class="w-full border-collapse border border-gray-300 text-sm">
+                                    <thead class="bg-purple-100">
+                                        <tr>
+                                            <th class="border border-gray-300 px-2 py-1">Clase</th>
+                                            <th class="border border-gray-300 px-2 py-1">Marca de Clase (Xi)</th>
+                                            <th class="border border-gray-300 px-2 py-1">Frecuencia (fi)</th>
+                                            <th class="border border-gray-300 px-2 py-1">Frecuencia Relativa (fri)</th>
+                                            <th class="border border-gray-300 px-2 py-1">Frecuencia Acumulada (Fi)</th>
+                                            <th class="border border-gray-300 px-2 py-1">Frecuencia Relativa Acumulada (Fri)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="grouped-frequency-body">
+                                        <!-- This will be populated by the existing frequencyData -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulas Section -->
+                    <div class="bg-yellow-50 p-4 rounded-lg border-2 border-yellow-200 mt-6">
+                        <h3 class="text-lg font-semibold text-yellow-800 mb-3">
+                            <i class="fas fa-calculator mr-2"></i>Fórmulas para Datos Agrupados
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-2">Número de clases (k):</h4>
+                                <div class="font-mono text-sm bg-gray-100 p-2 rounded">
+                                    k = 1 + 3.322 × log₁₀(n)
+                                </div>
+                                <p class="text-xs text-gray-600 mt-1">Regla de Sturges</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-2">Amplitud de clase (a):</h4>
+                                <div class="font-mono text-sm bg-gray-100 p-2 rounded">
+                                    a = (Xmax - Xmin) / k
+                                </div>
+                                <p class="text-xs text-gray-600 mt-1">Rango dividido por número de clases</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-2">Marca de clase (Xi):</h4>
+                                <div class="font-mono text-sm bg-gray-100 p-2 rounded">
+                                    Xi = (Li + Ls) / 2
+                                </div>
+                                <p class="text-xs text-gray-600 mt-1">Punto medio del intervalo</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-2">Frecuencia relativa (fri):</h4>
+                                <div class="font-mono text-sm bg-gray-100 p-2 rounded">
+                                    fri = fi / n
+                                </div>
+                                <p class="text-xs text-gray-600 mt-1">Proporción de cada clase</p>
+                            </div>
+                        </div>
+
+                        <!-- Current Data Calculations -->
+                        <div class="bg-white p-3 rounded border mt-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">Cálculos con datos actuales:</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                                <div class="bg-gray-50 p-2 rounded">
+                                    <div class="text-xs text-gray-600">n (total datos)</div>
+                                    <div class="font-bold" id="formula-n">--</div>
+                                </div>
+                                <div class="bg-gray-50 p-2 rounded">
+                                    <div class="text-xs text-gray-600">k (clases)</div>
+                                    <div class="font-bold" id="formula-k">--</div>
+                                </div>
+                                <div class="bg-gray-50 p-2 rounded">
+                                    <div class="text-xs text-gray-600">Rango</div>
+                                    <div class="font-bold" id="formula-range">--</div>
+                                </div>
+                                <div class="bg-gray-50 p-2 rounded">
+                                    <div class="text-xs text-gray-600">Amplitud (a)</div>
+                                    <div class="font-bold" id="formula-amplitude">--</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Summary -->
+                    <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200 mt-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                            <i class="fas fa-balance-scale mr-2"></i>Comparación y Analogías
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-green-50 p-3 rounded border border-green-200">
+                                <h4 class="font-semibold text-green-800 mb-2">✅ Similitudes:</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• Ambas muestran distribución de frecuencias</li>
+                                    <li>• Incluyen frecuencias absolutas y relativas</li>
+                                    <li>• Calculan frecuencias acumuladas</li>
+                                    <li>• La suma de frecuencias relativas = 1</li>
+                                    <li>• Permiten análisis estadístico básico</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-red-50 p-3 rounded border border-red-200">
+                                <h4 class="font-semibold text-red-800 mb-2">⚠️ Diferencias:</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• <strong>Simple:</strong> Valores individuales vs <strong>Agrupada:</strong> Intervalos</li>
+                                    <li>• <strong>Simple:</strong> Datos discretos vs <strong>Agrupada:</strong> Datos continuos</li>
+                                    <li>• <strong>Simple:</strong> No hay marca de clase vs <strong>Agrupada:</strong> Usa marcas</li>
+                                    <li>• <strong>Simple:</strong> Pocos valores vs <strong>Agrupada:</strong> Muchos valores</li>
+                                    <li>• <strong>Agrupada:</strong> Requiere cálculo de clases y amplitud</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Statistics -->
+            <div class="section-content" id="stats-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                        <i class="fas fa-info-circle mr-2"></i>Estadísticas Básicas
+                    </h2>
+                    <div id="basicStats" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+                </div>
+            </div>
+
+            <!-- Quartiles and Outliers -->
+            <div class="section-content" id="quartiles-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                        <i class="fas fa-chart-line mr-2"></i>Cuartiles y Valores Atípicos
+                    </h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div id="quartiles"></div>
+                        <div id="outliers"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frequency Distribution Table -->
+            <div class="section-content" id="frequency-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                        <i class="fas fa-table mr-2"></i>Distribución de Frecuencias
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table id="frequencyTable" class="w-full border-collapse border border-gray-300"></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <!-- Histogram -->
+            <div class="section-content" id="histogram-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                        <i class="fas fa-chart-bar mr-2"></i>Histograma de Distribución de Frecuencias
+                    </h2>
+                    <div class="chart-container">
+                        <div id="histogramChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boxplot -->
+            <div class="section-content" id="boxplot-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                        <i class="fas fa-box mr-2"></i>Gráfico de Caja y Bigotes
+                    </h2>
+                    <div class="chart-container">
+                        <div id="boxplotChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Combined Chart -->
+            <div class="section-content" id="combined-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                        <i class="fas fa-layer-group mr-2"></i>Gráfica Combinada (Histograma + Boxplot)
+                    </h2>
+                    <div class="combined-chart">
+                        <div id="combinedChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overlapping Chart -->
+            <div class="section-content" id="overlapping-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                        <i class="fas fa-chart-area mr-2"></i>Gráfica de Sobreposición (Histograma con Boxplot Superpuesto)
+                    </h2>
+                    <div class="chart-container">
+                        <div id="overlappingChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cumulative Frequency Polygon -->
+            <div class="section-content" id="polygon-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-800">
+                        <i class="fas fa-chart-line mr-2"></i>Polígonos de Frecuencias Acumuladas (Ojivas)
+                    </h2>
+                    
+                    <!-- Descripción teórica -->
+                    <div class="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-3">
+                            <i class="fas fa-info-circle mr-2"></i>¿Qué son las Ojivas?
+                        </h3>
+                        <p class="text-gray-700 mb-3">
+                            Las ojivas son gráficos de línea que representan las frecuencias acumuladas. Existen dos tipos principales:
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-2">📊 Frecuencias Relativas Acumuladas</h4>
+                                <p class="text-sm text-gray-700">
+                                    Muestra la proporción acumulada de datos hasta cada valor. Los valores van de 0 a 1 (0% a 100%).
+                                </p>
+                            </div>
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-2">📈 Frecuencias Absolutas Acumuladas</h4>
+                                <p class="text-sm text-gray-700">
+                                    Muestra el número acumulado de observaciones hasta cada valor. Los valores van de 0 al total de datos (n).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos lado a lado -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Frecuencias Relativas Acumuladas -->
+                        <div class="bg-gray-50 p-4 rounded-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3 text-center">
+                                <i class="fas fa-percentage mr-2"></i>Frecuencias Relativas Acumuladas
+                            </h3>
+                            <div class="chart-container">
+                                <div id="polygonRelativeChart" style="height: 400px;"></div>
+                            </div>
+                            <div class="mt-3 text-sm text-gray-600 text-center">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Eje izquierdo: valores decimales (0-1) | Eje derecho: porcentajes (0%-100%)
+                            </div>
+                        </div>
+
+                        <!-- Frecuencias Absolutas Acumuladas -->
+                        <div class="bg-gray-50 p-4 rounded-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3 text-center">
+                                <i class="fas fa-hashtag mr-2"></i>Frecuencias Absolutas Acumuladas
+                            </h3>
+                            <div class="chart-container">
+                                <div id="polygonAbsoluteChart" style="height: 400px;"></div>
+                            </div>
+                            <div class="mt-3 text-sm text-gray-600 text-center">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Eje izquierdo: número de datos | Eje derecho: porcentajes (0%-100%)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interpretación -->
+                    <div class="bg-yellow-50 p-4 rounded-lg mt-6 border border-yellow-200">
+                        <h3 class="text-lg font-semibold text-yellow-800 mb-3">
+                            <i class="fas fa-lightbulb mr-2"></i>Interpretación de las Ojivas
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-2">📍 Cuartiles en las Ojivas:</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• <strong>25% (Q1):</strong> Primer cuartil</li>
+                                    <li>• <strong>50% (Q2):</strong> Mediana</li>
+                                    <li>• <strong>75% (Q3):</strong> Tercer cuartil</li>
+                                    <li>• <strong>100%:</strong> Valor máximo</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-2">🎯 Utilidad práctica:</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• Determinar percentiles visualmente</li>
+                                    <li>• Comparar distribuciones</li>
+                                    <li>• Identificar la forma de la distribución</li>
+                                    <li>• Análisis de tendencias acumulativas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Datos calculados -->
+                    <div class="bg-white p-4 rounded-lg mt-6 border">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                            <i class="fas fa-calculator mr-2"></i>Datos Calculados
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="polygon-stats">
+                            <div class="bg-gray-50 p-3 rounded text-center">
+                                <div class="text-xs text-gray-600">Total de datos (n)</div>
+                                <div class="text-lg font-bold text-blue-600" id="polygon-total-n">--</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded text-center">
+                                <div class="text-xs text-gray-600">Q1 (25%)</div>
+                                <div class="text-lg font-bold text-green-600" id="polygon-q1">--</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded text-center">
+                                <div class="text-xs text-gray-600">Q2/Mediana (50%)</div>
+                                <div class="text-lg font-bold text-yellow-600" id="polygon-q2">--</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded text-center">
+                                <div class="text-xs text-gray-600">Q3 (75%)</div>
+                                <div class="text-lg font-bold text-purple-600" id="polygon-q3">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quartile Calculation Tutorial -->
+            <div class="section-content" id="quartile-tutorial-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-800">
+                        <i class="fas fa-graduation-cap mr-2"></i>2.7.5 Cálculo de cuartiles en datos NO agrupados
+                    </h2>
+                    
+                    <div id="quartile-explanation" class="space-y-6">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="text-gray-700 mb-4">
+                                <strong>Sea el conjunto de datos no agrupados:</strong>
+                            </p>
+                            <div id="data-display" class="bg-white p-3 rounded border font-mono text-center text-lg">
+                                Ingrese datos para ver el cálculo paso a paso
+                            </div>
+                        </div>
+
+                        <!-- Q1 Calculation -->
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-green-800 mb-3">
+                                • Proceso Q₁:
+                            </h3>
+                            <p class="text-gray-700 mb-3">
+                                El primer cuartil es el valor mayor que el 25% de los valores de la distribución, como N=<span id="n-value-q1">--</span> resulta que
+                            </p>
+                            <div class="bg-white p-3 rounded border text-center">
+                                <div class="text-xl font-mono mb-2">
+                                    <span id="q1-fraction">n/4</span> = <span id="q1-result">--</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mt-3 mb-3">
+                                El primer cuartil es la media aritmética de dicho valor y el siguiente:
+                            </p>
+                            <div class="bg-white p-3 rounded border text-center">
+                                <div class="text-xl font-mono">
+                                    Q₁ = <span id="q1-calculation">--</span> = <span id="q1-final">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Q2 Calculation -->
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-yellow-800 mb-3">
+                                • Proceso Q₂:
+                            </h3>
+                            <p class="text-gray-700 mb-3">
+                                El segundo cuartil es, evidentemente, la mediana de la distribución, es el valor de la variable que ocupa el lugar central en un conjunto de datos ordenados. Como N=<span id="n-value-q2">--</span> resulta que
+                            </p>
+                            <div class="bg-white p-3 rounded border text-center">
+                                <div class="text-xl font-mono mb-2">
+                                    <span id="q2-fraction">n/2</span> = <span id="q2-result">--</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mt-3 mb-3">
+                                La mediana es la media aritmética de dicho valor y el siguiente:
+                            </p>
+                            <div class="bg-white p-3 rounded border text-center">
+                                <div class="text-xl font-mono">
+                                    M<sub>e</sub> = Q₂ = <span id="q2-calculation">--</span> = <span id="q2-final">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Q3 Calculation -->
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                • Proceso Q₃:
+                            </h3>
+                            <p class="text-gray-700 mb-3">
+                                El tercer cuartil es, el valor que sobrepasa al 75% de los valores de la distribución. En nuestro caso, como N = <span id="n-value-q3">--</span> resulta que
+                            </p>
+                            <div class="bg-white p-3 rounded border text-center">
+                                <div class="text-xl font-mono mb-2">
+                                    <span id="q3-fraction">3n/4</span> = <span id="q3-result">--</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mt-3 mb-3">
+                                Resulta:
+                            </p>
+                            <div class="bg-white p-3 rounded border text-center">
+                                <div class="text-xl font-mono">
+                                    Q₃ = <span id="q3-calculation">--</span> = <span id="q3-final">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                                Resumen de Cuartiles:
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-white p-3 rounded border text-center">
+                                    <div class="text-sm text-gray-600">Primer Cuartil</div>
+                                    <div class="text-2xl font-bold text-green-600" id="summary-q1">--</div>
+                                </div>
+                                <div class="bg-white p-3 rounded border text-center">
+                                    <div class="text-sm text-gray-600">Segundo Cuartil (Mediana)</div>
+                                    <div class="text-2xl font-bold text-yellow-600" id="summary-q2">--</div>
+                                </div>
+                                <div class="bg-white p-3 rounded border text-center">
+                                    <div class="text-sm text-gray-600">Tercer Cuartil</div>
+                                    <div class="text-2xl font-bold text-purple-600" id="summary-q3">--</div>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-white p-3 rounded border text-center">
+                                <div class="text-sm text-gray-600">Rango Intercuartílico (RIQ = Q₃ - Q₁)</div>
+                                <div class="text-2xl font-bold text-blue-600" id="summary-iqr">--</div>
+                            </div>
+                        </div>
+
+                        <!-- Even vs Odd Explanation -->
+                        <div class="bg-indigo-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-indigo-800 mb-3">
+                                <i class="fas fa-info-circle mr-2"></i>Casos Especiales: Datos Pares vs Impares
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="bg-white p-3 rounded border">
+                                    <h4 class="font-semibold text-gray-800 mb-2">📊 Número Par de Datos (n es par):</h4>
+                                    <p class="text-gray-700 text-sm">
+                                        Cuando n es par, las posiciones n/4, n/2, y 3n/4 pueden no ser números enteros. 
+                                        En este caso, tomamos la media aritmética de los dos valores adyacentes.
+                                    </p>
+                                    <div class="mt-2 text-xs text-gray-600 font-mono bg-gray-100 p-2 rounded">
+                                        Ejemplo: Si n=20, entonces n/2=10, tomamos (valor₁₀ + valor₁₁)/2
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border">
+                                    <h4 class="font-semibold text-gray-800 mb-2">📊 Número Impar de Datos (n es impar):</h4>
+                                    <p class="text-gray-700 text-sm">
+                                        Cuando n es impar, las posiciones pueden dar números enteros o decimales. 
+                                        Si es decimal, redondeamos hacia arriba para encontrar la posición.
+                                    </p>
+                                    <div class="mt-2 text-xs text-gray-600 font-mono bg-gray-100 p-2 rounded">
+                                        Ejemplo: Si n=15, entonces n/2=7.5, tomamos el valor en la posición 8
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie Chart Tutorial -->
+            <div class="section-content" id="pie-chart-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-800">
+                        <i class="fas fa-chart-pie mr-2"></i>2.2.1 Construcción del Gráfico de Torta (Pie Chart)
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Formula Section -->
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-3">
+                                Fórmula para obtener el ángulo:
+                            </h3>
+                            <div class="bg-white p-4 rounded border text-center">
+                                <div class="text-2xl font-mono">
+                                    α = <span class="text-blue-600">(360° / N)</span> × f<sub>i</sub>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 text-sm mt-2">
+                                Donde: <strong>α</strong> = ángulo del sector, <strong>N</strong> = total de datos, <strong>f<sub>i</sub></strong> = frecuencia de cada intervalo
+                            </p>
+                        </div>
+
+                        <!-- Data and Calculations -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                                Datos y Cálculos:
+                            </h3>
+                            <div class="bg-white p-3 rounded border mb-4">
+                                <div class="text-sm text-gray-600 mb-2">Conjunto de datos ordenados:</div>
+                                <div id="pie-data-display" class="font-mono text-center text-lg">
+                                    Ingrese datos para ver el cálculo
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded border">
+                                    <div class="text-sm text-gray-600 mb-2">Total de datos (N):</div>
+                                    <div id="pie-total-n" class="text-2xl font-bold text-blue-600">--</div>
+                                </div>
+                                <div class="bg-white p-3 rounded border">
+                                    <div class="text-sm text-gray-600 mb-2">Grados por dato:</div>
+                                    <div id="pie-degrees-per-unit" class="text-2xl font-bold text-green-600">--°</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step by Step Calculations -->
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-green-800 mb-3">
+                                Cálculo paso a paso por intervalos:
+                            </h3>
+                            <div id="pie-calculations" class="space-y-3">
+                                <p class="text-gray-600">Los cálculos aparecerán aquí una vez que ingrese los datos</p>
+                            </div>
+                        </div>
+
+                        <!-- Calculation Table -->
+                        <div class="bg-white p-4 rounded-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                                Tabla de Frecuencias y Ángulos:
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table id="pie-table" class="w-full border-collapse border border-gray-300">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="border border-gray-300 px-3 py-2">Intervalo</th>
+                                            <th class="border border-gray-300 px-3 py-2">Frecuencia (f<sub>i</sub>)</th>
+                                            <th class="border border-gray-300 px-3 py-2">Porcentaje (%)</th>
+                                            <th class="border border-gray-300 px-3 py-2">Ángulo (α)</th>
+                                            <th class="border border-gray-300 px-3 py-2">Cálculo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pie-table-body">
+                                        <tr>
+                                            <td colspan="5" class="border border-gray-300 px-3 py-2 text-center text-gray-500">
+                                                Ingrese datos para ver la tabla
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Pie Chart -->
+                        <div class="bg-white p-4 rounded-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                                Gráfico de Torta Interactivo:
+                            </h3>
+                            <div class="chart-container">
+                                <div id="pieChart" style="height: 500px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Code Example -->
+                        <div class="bg-indigo-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-indigo-800 mb-3">
+                                <i class="fas fa-code mr-2"></i>Ejemplo de implementación:
+                            </h3>
+                            <div class="bg-gray-800 text-green-400 p-3 rounded font-mono text-sm overflow-x-auto">
+                                <div>f1 &lt;- c(<span id="code-frequencies">12,3,9,6</span>)</div>
+                                <div>pie(f1)</div>
+                            </div>
+                            <p class="text-gray-700 text-sm mt-2">
+                                Este código R genera un gráfico de torta básico con las frecuencias calculadas.
+                            </p>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-yellow-800 mb-3">
+                                <i class="fas fa-lightbulb mr-2"></i>Resumen del Proceso:
+                            </h3>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                <li>Calcular la tabla de frecuencias de los datos agrupados</li>
+                                <li>Aplicar la fórmula α = (360°/N) × f<sub>i</sub> para cada intervalo</li>
+                                <li>Verificar que la suma de todos los ángulos sea 360°</li>
+                                <li>Construir el gráfico de torta con los ángulos calculados</li>
+                                <li>Añadir etiquetas con porcentajes para mejor interpretación</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dispersion Theory Section -->
+            <div class="section-content" id="dispersion-theory-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-800">
+                        <i class="fas fa-expand-arrows-alt mr-2"></i>Medidas de Dispersión
+                    </h2>
+                    
+                    <!-- Introduction -->
+                    <div class="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-3">
+                            <i class="fas fa-info-circle mr-2"></i>¿Qué es la Dispersión?
+                        </h3>
+                        <p class="text-gray-700 mb-3">
+                            Las medidas de dispersión nos indican qué tan separados están los datos respecto a la media aritmética. 
+                            Una medida de dispersión pequeña indica que los datos se acumulan con proximidad alrededor de la media aritmética. 
+                            Por consiguiente, la media se considera representativa de los datos.
+                        </p>
+                        <p class="text-gray-700">
+                            Por el contrario, una medida grande de dispersión indica que la media no es confiable.
+                        </p>
+                    </div>
+
+                    <!-- Absolute Dispersion -->
+                    <div class="bg-green-50 p-4 rounded-lg mb-6 border border-green-200">
+                        <h3 class="text-lg font-semibold text-green-800 mb-3">
+                            • Dispersión Absoluta
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            Entre ellas el rango, el rango intercuartílico, la desviación media, la varianza y la desviación típica.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <!-- For ungrouped data -->
+                            <div class="bg-white p-4 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-3">Para datos no agrupados:</h4>
+                                <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+                                    DM = Σ|xᵢ - x̄| / n = Σ|dᵢ| / n
+                                </div>
+                                <p class="text-xs text-gray-600">Donde dᵢ = xᵢ - x̄ (desviación de cada valor)</p>
+                            </div>
+                            
+                            <!-- For grouped data -->
+                            <div class="bg-white p-4 rounded border">
+                                <h4 class="font-semibold text-gray-800 mb-3">Para datos agrupados:</h4>
+                                <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+                                    DM = Σ|xᵢₘ - x̄|fᵢ / n = Σxᵢ|dᵢ| / n
+                                </div>
+                                <p class="text-xs text-gray-600">Donde xᵢₘ es la marca de clase y fᵢ la frecuencia</p>
+                            </div>
+                        </div>
+
+                        <!-- Current Data Calculations -->
+                        <div class="bg-white p-4 rounded border mt-4">
+                            <h4 class="font-semibold text-gray-800 mb-3">Cálculos con datos actuales:</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div class="bg-gray-50 p-3 rounded text-center">
+                                    <div class="text-xs text-gray-600">Rango</div>
+                                    <div class="text-lg font-bold text-blue-600" id="dispersion-range">--</div>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded text-center">
+                                    <div class="text-xs text-gray-600">RIQ</div>
+                                    <div class="text-lg font-bold text-green-600" id="dispersion-iqr">--</div>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded text-center">
+                                    <div class="text-xs text-gray-600">Varianza</div>
+                                    <div class="text-lg font-bold text-purple-600" id="dispersion-variance">--</div>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded text-center">
+                                    <div class="text-xs text-gray-600">Desviación Estándar</div>
+                                    <div class="text-lg font-bold text-red-600" id="dispersion-std">--</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Relative Dispersion -->
+                    <div class="bg-yellow-50 p-4 rounded-lg mb-6 border border-yellow-200">
+                        <h3 class="text-lg font-semibold text-yellow-800 mb-3">
+                            • Dispersión Relativa
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            La que tiene mayor importancia es el coeficiente de variación.
+                        </p>
+                        
+                        <div class="bg-white p-4 rounded border mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-3">Coeficiente de Variación (CV):</h4>
+                            <div class="bg-gray-100 p-3 rounded font-mono text-lg text-center mb-3">
+                                CV = (S / x̄) × 100%
+                            </div>
+                            <p class="text-sm text-gray-700 mb-3">
+                                El coeficiente de variación (o coeficiente de Pearson) CV, se define por el cociente entre la desviación típica 
+                                (o estándar) y la media aritmética de la variable e indica, por tanto, el número de veces que la desviación típica 
+                                contiene a la media.
+                            </p>
+                            
+                            <!-- CV Interpretation -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div class="bg-green-100 p-3 rounded text-center">
+                                    <div class="text-sm font-semibold text-green-800">CV < 15%</div>
+                                    <div class="text-xs text-gray-600">Baja dispersión</div>
+                                    <div class="text-xs text-gray-600">Media muy representativa</div>
+                                </div>
+                                <div class="bg-yellow-100 p-3 rounded text-center">
+                                    <div class="text-sm font-semibold text-yellow-800">15% ≤ CV ≤ 35%</div>
+                                    <div class="text-xs text-gray-600">Dispersión moderada</div>
+                                    <div class="text-xs text-gray-600">Media aceptablemente representativa</div>
+                                </div>
+                                <div class="bg-red-100 p-3 rounded text-center">
+                                    <div class="text-sm font-semibold text-red-800">CV > 35%</div>
+                                    <div class="text-xs text-gray-600">Alta dispersión</div>
+                                    <div class="text-xs text-gray-600">Media poco representativa</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current CV Calculation -->
+                        <div class="bg-white p-4 rounded border">
+                            <h4 class="font-semibold text-gray-800 mb-3">Coeficiente de Variación con datos actuales:</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-gray-50 p-3 rounded text-center">
+                                    <div class="text-xs text-gray-600">Media (x̄)</div>
+                                    <div class="text-lg font-bold" id="cv-mean">--</div>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded text-center">
+                                    <div class="text-xs text-gray-600">Desviación Estándar (S)</div>
+                                    <div class="text-lg font-bold" id="cv-std">--</div>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded text-center border border-blue-300">
+                                    <div class="text-xs text-gray-600">Coeficiente de Variación</div>
+                                    <div class="text-2xl font-bold text-blue-600" id="cv-result">--</div>
+                                    <div class="text-xs text-gray-600" id="cv-interpretation">--</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-3 rounded" id="cv-analysis">
+                                <div class="font-semibold text-gray-800">Análisis:</div>
+                                <div class="text-sm text-gray-700" id="cv-analysis-text">
+                                    El análisis aparecerá una vez que calcule los datos
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Important Notes -->
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <h3 class="text-lg font-semibold text-red-800 mb-3">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Consideraciones Importantes
+                        </h3>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li>• <strong>CV = 0:</strong> Todos los valores son iguales a la media (dispersión nula)</li>
+                            <li>• <strong>CV muy bajo:</strong> La media es perfecta representación de los datos</li>
+                            <li>• <strong>CV muy alto:</strong> Los datos están muy dispersos, la media es poco representativa</li>
+                            <li>• <strong>Problema del denominador cero:</strong> Si la media es 0, el CV carece de significado</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- River Simulation Section -->
+            <div class="section-content" id="river-simulation-section">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-800">
+                        <i class="fas fa-water mr-2"></i>Simulación: Profundidad del Río
+                    </h2>
+                    
+                    <!-- Scenario Description -->
+                    <div class="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-3">
+                            <i class="fas fa-question-circle mr-2"></i>Escenario del Problema
+                        </h3>
+                        <p class="text-gray-700 mb-3">
+                            <strong>¿Qué hay si usted se enteró de que la profundidad del río variaba de 0.50 a 5.5 pies?</strong> 
+                            Su decisión probablemente sería no cruzar. Antes de tomar una decisión, usted desea información tanto de la 
+                            profundidad típica como de la dispersión de la profundidad del río.
+                        </p>
+                        <p class="text-gray-700">
+                            Este ejemplo ilustra la importancia de las medidas de dispersión en la toma de decisiones.
+                        </p>
+                    </div>
+
+                    <!-- River Data Input -->
+                    <div class="bg-green-50 p-4 rounded-lg mb-6 border border-green-200">
+                        <h3 class="text-lg font-semibold text-green-800 mb-3">
+                            <i class="fas fa-ruler-vertical mr-2"></i>Datos de Profundidad del Río
+                        </h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Ingrese profundidades del río (en pies, separadas por comas):
+                                </label>
+                                <textarea id="riverDepthInput" 
+                                          class="w-full h-20 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                          placeholder="Ejemplo: 0.5, 1.2, 1.8, 2.1, 2.5, 3.2, 3.8, 4.1, 4.8, 5.5"></textarea>
+                                <button onclick="analyzeRiverData()" 
+                                        class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300">
+                                    <i class="fas fa-calculator mr-2"></i>Analizar Río
+                                </button>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Altura máxima segura para cruzar (pies):
+                                </label>
+                                <input type="number" id="safeHeight" value="2.0" step="0.1" min="0" 
+                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <div class="mt-2 text-sm text-gray-600">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Establezca la profundidad máxima que considera segura para cruzar
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- River Analysis Results -->
+                    <div id="riverAnalysisResults" class="hidden">
+                        <!-- Statistical Summary -->
+                        <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                                <i class="fas fa-chart-bar mr-2"></i>Análisis Estadístico del Río
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div class="bg-white p-3 rounded border text-center">
+                                    <div class="text-xs text-gray-600">Profundidad Media</div>
+                                    <div class="text-lg font-bold text-blue-600" id="river-mean">--</div>
+                                    <div class="text-xs text-gray-600">pies</div>
+                                </div>
+                                <div class="bg-white p-3 rounded border text-center">
+                                    <div class="text-xs text-gray-600">Desviación Estándar</div>
+                                    <div class="text-lg font-bold text-purple-600" id="river-std">--</div>
+                                    <div class="text-xs text-gray-600">pies</div>
+                                </div>
+                                <div class="bg-white p-3 rounded border text-center">
+                                    <div class="text-xs text-gray-600">Coeficiente de Variación</div>
+                                    <div class="text-lg font-bold text-orange-600" id="river-cv">--</div>
+                                    <div class="text-xs text-gray-600">%</div>
+                                </div>
+                                <div class="bg-white p-3 rounded border text-center">
+                                    <div class="text-xs text-gray-600">Rango</div>
+                                    <div class="text-lg font-bold text-red-600" id="river-range">--</div>
+                                    <div class="text-xs text-gray-600">pies</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Decision Analysis -->
+                        <div class="bg-yellow-50 p-4 rounded-lg mb-6 border border-yellow-200">
+                            <h3 class="text-lg font-semibold text-yellow-800 mb-3">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Análisis de Decisión
+                            </h3>
+                            <div id="river-decision-content">
+                                <!-- Content will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Risk Assessment -->
+                        <div class="bg-red-50 p-4 rounded-lg mb-6 border border-red-200">
+                            <h3 class="text-lg font-semibold text-red-800 mb-3">
+                                <i class="fas fa-shield-alt mr-2"></i>Evaluación de Riesgo
+                            </h3>
+                            <div id="river-risk-content">
+                                <!-- Content will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Visual Representation -->
+                        <div class="bg-white p-4 rounded-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                                <i class="fas fa-chart-area mr-2"></i>Visualización de la Profundidad del Río
+                            </h3>
+                            <div class="chart-container">
+                                <div id="riverChart" style="height: 400px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Sections View -->
+            <div class="section-content" id="all-sections">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                            <i class="fas fa-info-circle mr-2"></i>Estadísticas Básicas
+                        </h2>
+                        <div id="basicStats2" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                            <i class="fas fa-chart-line mr-2"></i>Cuartiles y Valores Atípicos
+                        </h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div id="quartiles2"></div>
+                            <div id="outliers2"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                            <i class="fas fa-table mr-2"></i>Distribución de Frecuencias
+                        </h2>
+                        <div class="overflow-x-auto">
+                            <table id="frequencyTable2" class="w-full border-collapse border border-gray-300"></table>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                                <i class="fas fa-chart-bar mr-2"></i>Histograma
+                            </h2>
+                            <div class="chart-container">
+                                <div id="histogramChart2" style="height: 300px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                                <i class="fas fa-box mr-2"></i>Gráfico de Caja
+                            </h2>
+                            <div class="chart-container">
+                                <div id="boxplotChart2" style="height: 300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                            <i class="fas fa-layer-group mr-2"></i>Gráfica Combinada
+                        </h2>
+                        <div class="combined-chart">
+                            <div id="combinedChart2"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                            <i class="fas fa-chart-area mr-2"></i>Gráfica de Sobreposición
+                        </h2>
+                        <div class="chart-container">
+                            <div id="overlappingChart2"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                            <i class="fas fa-chart-line mr-2"></i>Polígonos de Frecuencias Acumuladas
+                        </h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="chart-container">
+                                <h3 class="text-md font-semibold text-gray-700 mb-2 text-center">Frecuencias Relativas</h3>
+                                <div id="polygonRelativeChart2" style="height: 350px;"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h3 class="text-md font-semibold text-gray-700 mb-2 text-center">Frecuencias Absolutas</h3>
+                                <div id="polygonAbsoluteChart2" style="height: 350px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                            <i class="fas fa-chart-pie mr-2"></i>Gráfico de Torta
+                        </h2>
+                        <div class="chart-container">
+                            <div id="pieChart2" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
