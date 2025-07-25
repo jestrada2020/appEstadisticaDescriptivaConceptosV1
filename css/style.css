@@ -13,7 +13,7 @@
             top: 0;
             width: 280px;
             height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2d3748;
             color: white;
             overflow-y: auto;
             z-index: 1000;
@@ -22,8 +22,8 @@
         
         .sidebar-header {
             padding: 20px;
-            background: rgba(0,0,0,0.1);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
         }
         
         .sidebar-menu {
@@ -33,7 +33,7 @@
         .menu-item {
             display: block;
             padding: 15px 25px;
-            color: white;
+            color: #ffffff;
             text-decoration: none;
             border-left: 4px solid transparent;
             transition: all 0.3s ease;
@@ -41,14 +41,14 @@
         }
         
         .menu-item:hover {
-            background: rgba(255,255,255,0.1);
-            border-left-color: #fff;
+            background: rgba(59, 130, 246, 0.4);
+            border-left-color: #3b82f6;
             color: white;
         }
         
         .menu-item.active {
-            background: rgba(255,255,255,0.2);
-            border-left-color: #ffd700;
+            background: rgba(59, 130, 246, 0.6);
+            border-left-color: #3b82f6;
         }
         
         .menu-icon {
@@ -66,7 +66,7 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            background: #667eea;
+            background: #2d3748;
             color: white;
             border: none;
             padding: 10px;
