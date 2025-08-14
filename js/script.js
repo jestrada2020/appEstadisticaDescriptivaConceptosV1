@@ -1330,7 +1330,8 @@ function showSection(sectionId) {
                 section.id !== 'quartile-tutorial-section' && 
                 section.id !== 'pie-chart-section' && 
                 section.id !== 'dispersion-theory-section' && 
-                section.id !== 'river-simulation-section') {
+                section.id !== 'river-simulation-section' &&
+                section.id !== 'enhanced-boxplot-section') {
                 section.classList.add('active');
             }
         });
@@ -1431,6 +1432,590 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.toggle('open');
+    }
+}
+
+// Variables globales para el boxplot mejorado
+let enhancedData = [];
+let enhancedStats = {};
+
+function calculateEnhancedBoxplot() {
+    const input = document.getElementById('enhancedBoxplotInput').value;
+    if (!input.trim()) {
+        alert('Por favor, ingrese algunos datos.');
+        return;
+    }
+    
+    // Procesar datos de entrada
+    enhancedData = input.split(/[,\s\n]+/)
+                        .filter(x => x.trim() !== '')
+                        .map(x => parseFloat(x.trim()))
+                        .filter(x => !isNaN(x));
+    
+    if (enhancedData.length === 0) {
+        alert('No se encontraron datos válidos.');
+        return;
+    }
+    
+    // Ordenar datos
+    enhancedData.sort((a, b) => a - b);
+    
+    // Mostrar datos ordenados
+    const enhancedDataDisplay = document.getElementById('enhancedDataDisplay');
+    if (enhancedDataDisplay) {
+        enhancedDataDisplay.textContent = enhancedData.join(', ');
+    }
+    
+    // Calcular estadísticas mejoradas
+    calculateEnhancedStatistics();
+    displayEnhancedResults();
+    createEnhancedBoxplotVisualization();
+    
+    // Mostrar contenedor de resultados
+    const resultsContainer = document.getElementById('enhancedBoxplotResults');
+    if (resultsContainer) {
+        resultsContainer.classList.remove('hidden');
+    }
+}
+
+function calculateEnhancedStatistics() {
+    
+    // Función para calcular percentiles
+    function getPercentile(data, p) {
+        const index = p * (data.length - 1);
+        const lower = Math.floor(index);
+        const upper = Math.ceil(index);
+        const weight = index - lower;
+        
+        if (lower === upper) return data[lower];
+        return data[lower] * (1 - weight) + data[upper] * weight;
+    }
+    
+    // Calcular cuartiles
+    const Q1 = getPercentile(enhancedData, 0.25);
+    const Q2 = getPercentile(enhancedData, 0.5);
+    const Q3 = getPercentile(enhancedData, 0.75);
+    const IQR = Q3 - Q1;
+    
+    // Calcular barreras interiores (1.5 × IQR)
+    const innerLowerFence = Q1 - 1.5 * IQR;
+    const innerUpperFence = Q3 + 1.5 * IQR;
+    
+    // Calcular barreras exteriores (3 × IQR)
+    const outerLowerFence = Q1 - 3 * IQR;
+    const outerUpperFence = Q3 + 3 * IQR;
+    
+    // Clasificar outliers
+    const outliers = {
+        moderate: enhancedData.filter(x => 
+            (x < innerLowerFence && x >= outerLowerFence) ||
+            (x > innerUpperFence && x <= outerUpperFence)
+        ),
+        extreme: enhancedData.filter(x => 
+            x < outerLowerFence || x > outerUpperFence
+        ),
+        normal: enhancedData.filter(x => 
+            x >= innerLowerFence && x <= innerUpperFence
+        )
+    };
+    
+    // Calcular límites de los bigotes según las reglas estándar del boxplot
+    // Los bigotes se extienden hasta el valor real más extremo que esté dentro de las barreras interiores
+    const valuesWithinFences = enhancedData.filter(x => x >= innerLowerFence && x <= innerUpperFence);
+    
+    let whiskerLower, whiskerUpper;
+    
+    if (valuesWithinFences.length > 0) {
+        // Bigote inferior: el valor más pequeño que esté dentro del rango normal
+        whiskerLower = Math.min(...valuesWithinFences);
+        // Bigote superior: el valor más grande que esté dentro del rango normal
+        whiskerUpper = Math.max(...valuesWithinFences);
+    } else {
+        // Si no hay valores dentro del rango (caso extremo), usar Q1 y Q3
+        whiskerLower = Q1;
+        whiskerUpper = Q3;
+    }
+    
+    enhancedStats = {
+        Q1, Q2, Q3, IQR,
+        innerLowerFence, innerUpperFence,
+        outerLowerFence, outerUpperFence,
+        whiskerLower, whiskerUpper,
+        outliers
+    };
+}
+
+function displayEnhancedResults() {
+    // Mostrar cuartiles
+    const q1Element = document.getElementById('enhanced-q1');
+    if (q1Element) q1Element.textContent = enhancedStats.Q1.toFixed(4);
+    
+    const q2Element = document.getElementById('enhanced-q2');
+    if (q2Element) q2Element.textContent = enhancedStats.Q2.toFixed(4);
+    
+    const q3Element = document.getElementById('enhanced-q3');
+    if (q3Element) q3Element.textContent = enhancedStats.Q3.toFixed(4);
+    
+    const iqrElement = document.getElementById('enhanced-iqr');
+    if (iqrElement) iqrElement.textContent = enhancedStats.IQR.toFixed(4);
+    
+    // Mostrar barreras interiores
+    const innerLowerElement = document.getElementById('enhanced-inner-lower');
+    if (innerLowerElement) innerLowerElement.textContent = enhancedStats.innerLowerFence.toFixed(4);
+    
+    const innerUpperElement = document.getElementById('enhanced-inner-upper');
+    if (innerUpperElement) innerUpperElement.textContent = enhancedStats.innerUpperFence.toFixed(4);
+    
+    // Mostrar barreras exteriores
+    const outerLowerElement = document.getElementById('enhanced-outer-lower');
+    if (outerLowerElement) outerLowerElement.textContent = enhancedStats.outerLowerFence.toFixed(4);
+    
+    const outerUpperElement = document.getElementById('enhanced-outer-upper');
+    if (outerUpperElement) outerUpperElement.textContent = enhancedStats.outerUpperFence.toFixed(4);
+    
+    // Análisis de outliers
+    updateOutlierAnalysis();
+    
+    // Actualizar leyenda de colores y zonas
+    updateLegendValues();
+}
+
+function updateLegendValues() {
+    const { Q1, Q2, Q3, IQR, innerLowerFence, innerUpperFence, outerLowerFence, outerUpperFence, whiskerLower, whiskerUpper } = enhancedStats;
+    
+    // Actualizar valores en la leyenda de zonas
+    const legendOuterLower = document.getElementById('legend-outer-lower');
+    if (legendOuterLower) legendOuterLower.textContent = outerLowerFence.toFixed(2);
+    
+    const legendOuterUpper = document.getElementById('legend-outer-upper');
+    if (legendOuterUpper) legendOuterUpper.textContent = outerUpperFence.toFixed(2);
+    
+    const legendInnerLower = document.getElementById('legend-inner-lower');
+    if (legendInnerLower) legendInnerLower.textContent = innerLowerFence.toFixed(2);
+    
+    const legendInnerUpper = document.getElementById('legend-inner-upper');
+    if (legendInnerUpper) legendInnerUpper.textContent = innerUpperFence.toFixed(2);
+    
+    const legendInnerLower2 = document.getElementById('legend-inner-lower-2');
+    if (legendInnerLower2) legendInnerLower2.textContent = innerLowerFence.toFixed(2);
+    
+    const legendInnerUpper2 = document.getElementById('legend-inner-upper-2');
+    if (legendInnerUpper2) legendInnerUpper2.textContent = innerUpperFence.toFixed(2);
+    
+    const legendQ1 = document.getElementById('legend-q1');
+    if (legendQ1) legendQ1.textContent = Q1.toFixed(2);
+    
+    const legendQ2 = document.getElementById('legend-q2');
+    if (legendQ2) legendQ2.textContent = Q2.toFixed(2);
+    
+    const legendQ3 = document.getElementById('legend-q3');
+    if (legendQ3) legendQ3.textContent = Q3.toFixed(2);
+    
+    // Actualizar valores en las fórmulas
+    const legendIqr = document.getElementById('legend-iqr');
+    if (legendIqr) legendIqr.textContent = IQR.toFixed(2);
+    
+    const legend15ri = document.getElementById('legend-1.5ri');
+    if (legend15ri) legend15ri.textContent = (1.5 * IQR).toFixed(2);
+    
+    const legend3ri = document.getElementById('legend-3ri');
+    if (legend3ri) legend3ri.textContent = (3 * IQR).toFixed(2);
+    
+    // Actualizar valores de los bigotes
+    const legendWhiskerLower = document.getElementById('legend-whisker-lower');
+    if (legendWhiskerLower) legendWhiskerLower.textContent = whiskerLower.toFixed(2);
+    
+    const legendWhiskerUpper = document.getElementById('legend-whisker-upper');
+    if (legendWhiskerUpper) legendWhiskerUpper.textContent = whiskerUpper.toFixed(2);
+}
+
+function updateOutlierAnalysis() {
+    const { outliers } = enhancedStats;
+    const totalOutliers = outliers.moderate.length + outliers.extreme.length;
+    const totalNormal = outliers.normal.length;
+    const totalData = enhancedData.length;
+    
+    let analysisHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="bg-white p-3 rounded border text-center">
+                <div class="text-sm text-gray-600">Valores Normales</div>
+                <div class="text-2xl font-bold text-green-600">${totalNormal}</div>
+                <div class="text-xs text-gray-500">${((totalNormal/totalData)*100).toFixed(1)}%</div>
+            </div>
+            <div class="bg-white p-3 rounded border text-center">
+                <div class="text-sm text-gray-600">Outliers Moderados</div>
+                <div class="text-2xl font-bold text-orange-600">${outliers.moderate.length}</div>
+                <div class="text-xs text-gray-500">${((outliers.moderate.length/totalData)*100).toFixed(1)}%</div>
+            </div>
+            <div class="bg-white p-3 rounded border text-center">
+                <div class="text-sm text-gray-600">Outliers Extremos</div>
+                <div class="text-2xl font-bold text-red-600">${outliers.extreme.length}</div>
+                <div class="text-xs text-gray-500">${((outliers.extreme.length/totalData)*100).toFixed(1)}%</div>
+            </div>
+        </div>
+    `;
+    
+    if (outliers.moderate.length > 0) {
+        analysisHTML += `
+            <div class="bg-orange-50 p-3 rounded border border-orange-200 mb-3">
+                <h4 class="font-semibold text-orange-800 mb-2">Outliers Moderados (●):</h4>
+                <div class="text-sm font-mono">${outliers.moderate.map(x => x.toFixed(2)).join(', ')}</div>
+                <p class="text-xs text-gray-700 mt-1">Valores entre 1.5×RI y 3×RI de distancia de los cuartiles</p>
+            </div>
+        `;
+    }
+    
+    if (outliers.extreme.length > 0) {
+        analysisHTML += `
+            <div class="bg-red-50 p-3 rounded border border-red-200 mb-3">
+                <h4 class="font-semibold text-red-800 mb-2">Outliers Extremos (○):</h4>
+                <div class="text-sm font-mono">${outliers.extreme.map(x => x.toFixed(2)).join(', ')}</div>
+                <p class="text-xs text-gray-700 mt-1">Valores más allá de 3×RI de distancia de los cuartiles</p>
+            </div>
+        `;
+    }
+    
+    if (totalOutliers === 0) {
+        analysisHTML += `
+            <div class="bg-green-50 p-3 rounded border border-green-200">
+                <h4 class="font-semibold text-green-800">✅ No se encontraron valores atípicos</h4>
+                <p class="text-sm text-gray-700">Todos los datos se encuentran dentro de los límites normales</p>
+            </div>
+        `;
+    }
+    
+    const analysisElement = document.getElementById('enhancedOutlierAnalysis');
+    if (analysisElement) {
+        analysisElement.innerHTML = analysisHTML;
+    }
+}
+
+function createEnhancedBoxplotVisualization() {
+    if (typeof Plotly === 'undefined') {
+        console.error('Plotly no está disponible');
+        return;
+    }
+    
+    const { Q1, Q2, Q3, IQR, innerLowerFence, innerUpperFence, outerLowerFence, outerUpperFence, outliers } = enhancedStats;
+    
+    const traces = [];
+    
+    // Crear bandas de color de fondo más amplias
+    const dataRange = Math.max(...enhancedData) - Math.min(...enhancedData);
+    const minVal = Math.min(...enhancedData) - dataRange * 0.3;
+    const maxVal = Math.max(...enhancedData) + dataRange * 0.3;
+    const yRange = 1.5;
+    
+    // Función helper para crear rectángulos de color
+    function createColorBand(x1, x2, color, name) {
+        return {
+            type: 'scatter',
+            x: [x1, x2, x2, x1, x1],
+            y: [-yRange, -yRange, yRange, yRange, -yRange],
+            fill: 'toself',
+            fillcolor: color,
+            mode: 'lines',
+            line: { color: 'transparent' },
+            name: name,
+            showlegend: false,
+            hoverinfo: 'skip'
+        };
+    }
+    
+    // Bandas de color más visibles
+    traces.push(createColorBand(minVal, outerLowerFence, 'rgba(239, 68, 68, 0.15)', 'Zona Extrema Izq'));
+    traces.push(createColorBand(outerLowerFence, innerLowerFence, 'rgba(249, 115, 22, 0.15)', 'Zona Moderada Izq'));
+    traces.push(createColorBand(innerLowerFence, innerUpperFence, 'rgba(34, 197, 94, 0.15)', 'Zona Normal'));
+    traces.push(createColorBand(innerUpperFence, outerUpperFence, 'rgba(249, 115, 22, 0.15)', 'Zona Moderada Der'));
+    traces.push(createColorBand(outerUpperFence, maxVal, 'rgba(239, 68, 68, 0.15)', 'Zona Extrema Der'));
+    
+    // Líneas límites principales con mejor visibilidad
+    
+    // Barreras exteriores (3×RI) - líneas rojas punteadas
+    traces.push({
+        x: [outerLowerFence, outerLowerFence],
+        y: [-yRange, yRange],
+        mode: 'lines',
+        line: { color: 'rgb(239, 68, 68)', width: 3, dash: 'dot' },
+        name: `Barrera Exterior Inf (3×RI)`,
+        showlegend: true,
+        hovertemplate: 'Barrera Exterior Inferior (3×RI): %{x:.2f}<extra></extra>'
+    });
+    
+    traces.push({
+        x: [outerUpperFence, outerUpperFence],
+        y: [-yRange, yRange],
+        mode: 'lines',
+        line: { color: 'rgb(239, 68, 68)', width: 3, dash: 'dot' },
+        name: `Barrera Exterior Sup (3×RI)`,
+        showlegend: true,
+        hovertemplate: 'Barrera Exterior Superior (3×RI): %{x:.2f}<extra></extra>'
+    });
+    
+    // Barreras interiores (1.5×RI) - líneas naranjas discontinuas
+    traces.push({
+        x: [innerLowerFence, innerLowerFence],
+        y: [-yRange, yRange],
+        mode: 'lines',
+        line: { color: 'rgb(249, 115, 22)', width: 3, dash: 'dash' },
+        name: `Barrera Interior Inf (1.5×RI)`,
+        showlegend: true,
+        hovertemplate: 'Barrera Interior Inferior (1.5×RI): %{x:.2f}<extra></extra>'
+    });
+    
+    traces.push({
+        x: [innerUpperFence, innerUpperFence],
+        y: [-yRange, yRange],
+        mode: 'lines',
+        line: { color: 'rgb(249, 115, 22)', width: 3, dash: 'dash' },
+        name: `Barrera Interior Sup (1.5×RI)`,
+        showlegend: true,
+        hovertemplate: 'Barrera Interior Superior (1.5×RI): %{x:.2f}<extra></extra>'
+    });
+    
+    // Box plot personalizado con valores calculados correctamente
+    const { whiskerLower, whiskerUpper } = enhancedStats;
+    
+    // Caja principal (del Q1 al Q3)
+    traces.push({
+        x: [Q1, Q3, Q3, Q1, Q1],
+        y: [-0.25, -0.25, 0.25, 0.25, -0.25],
+        fill: 'toself',
+        fillcolor: 'rgba(147, 197, 253, 0.4)',
+        mode: 'lines',
+        line: {
+            color: 'rgb(29, 78, 216)',
+            width: 3
+        },
+        name: 'Caja IQR (Q₁ a Q₃)',
+        showlegend: true,
+        hovertemplate: 'Caja IQR: Q₁=%{x[0]:.2f} a Q₃=%{x[1]:.2f}<extra></extra>'
+    });
+    
+    // Línea de la mediana
+    traces.push({
+        x: [Q2, Q2],
+        y: [-0.25, 0.25],
+        mode: 'lines',
+        line: {
+            color: 'rgb(29, 78, 216)',
+            width: 4
+        },
+        name: 'Mediana (Q₂)',
+        showlegend: true,
+        hovertemplate: 'Mediana: %{x:.2f}<extra></extra>'
+    });
+    
+    // Bigote izquierdo (desde Q1 hasta whiskerLower)
+    traces.push({
+        x: [whiskerLower, Q1],
+        y: [0, 0],
+        mode: 'lines',
+        line: {
+            color: 'rgb(29, 78, 216)',
+            width: 2
+        },
+        name: 'Bigote Izquierdo',
+        showlegend: true,
+        hovertemplate: 'Bigote Izquierdo: desde %{x[0]:.2f} hasta Q₁<extra></extra>'
+    });
+    
+    // Bigote derecho (desde Q3 hasta whiskerUpper)
+    traces.push({
+        x: [Q3, whiskerUpper],
+        y: [0, 0],
+        mode: 'lines',
+        line: {
+            color: 'rgb(29, 78, 216)',
+            width: 2
+        },
+        name: 'Bigote Derecho',
+        showlegend: true,
+        hovertemplate: 'Bigote Derecho: desde Q₃ hasta %{x[1]:.2f}<extra></extra>'
+    });
+    
+    // Tapas de los bigotes
+    traces.push({
+        x: [whiskerLower, whiskerLower],
+        y: [-0.1, 0.1],
+        mode: 'lines',
+        line: {
+            color: 'rgb(29, 78, 216)',
+            width: 2
+        },
+        name: 'Límite Inferior Real',
+        showlegend: false,
+        hovertemplate: 'Límite Inferior: %{x:.2f}<extra></extra>'
+    });
+    
+    traces.push({
+        x: [whiskerUpper, whiskerUpper],
+        y: [-0.1, 0.1],
+        mode: 'lines',
+        line: {
+            color: 'rgb(29, 78, 216)',
+            width: 2
+        },
+        name: 'Límite Superior Real',
+        showlegend: false,
+        hovertemplate: 'Límite Superior: %{x:.2f}<extra></extra>'
+    });
+    
+    // Outliers moderados con mejor visibilidad
+    if (outliers.moderate.length > 0) {
+        traces.push({
+            x: outliers.moderate,
+            y: Array(outliers.moderate.length).fill(0),
+            mode: 'markers',
+            marker: {
+                color: 'rgb(249, 115, 22)',
+                size: 12,
+                symbol: 'circle',
+                line: {
+                    color: 'rgb(194, 65, 12)',
+                    width: 2
+                }
+            },
+            name: 'Outliers Moderados (●)',
+            showlegend: true,
+            hovertemplate: 'Outlier Moderado: %{x:.2f}<extra></extra>'
+        });
+    }
+    
+    // Outliers extremos con mejor visibilidad
+    if (outliers.extreme.length > 0) {
+        traces.push({
+            x: outliers.extreme,
+            y: Array(outliers.extreme.length).fill(0),
+            mode: 'markers',
+            marker: {
+                color: 'rgba(239, 68, 68, 0.3)',
+                size: 14,
+                symbol: 'circle-open',
+                line: {
+                    color: 'rgb(220, 38, 38)',
+                    width: 3
+                }
+            },
+            name: 'Outliers Extremos (○)',
+            showlegend: true,
+            hovertemplate: 'Outlier Extremo: %{x:.2f}<extra></extra>'
+        });
+    }
+    
+    // Crear anotaciones básicas - solo cuartiles principales
+    const annotations = [
+        // Cuartiles principales - posicionados de manera simple y limpia
+        {
+            x: Q1,
+            y: 0.6,
+            text: `<b>Q₁</b><br>${Q1.toFixed(2)}`,
+            showarrow: true,
+            arrowhead: 4,
+            arrowcolor: 'rgb(37, 99, 235)',
+            arrowwidth: 2,
+            font: { size: 11, color: 'rgb(37, 99, 235)' },
+            bgcolor: 'rgba(147, 197, 253, 0.9)',
+            bordercolor: 'rgb(37, 99, 235)',
+            borderwidth: 1,
+            ax: 20,
+            ay: -30
+        },
+        {
+            x: Q2,
+            y: 0.8,
+            text: `<b>Q₂ (Mediana)</b><br>${Q2.toFixed(2)}`,
+            showarrow: true,
+            arrowhead: 4,
+            arrowcolor: 'rgb(147, 51, 234)',
+            arrowwidth: 2,
+            font: { size: 11, color: 'rgb(147, 51, 234)' },
+            bgcolor: 'rgba(196, 181, 253, 0.9)',
+            bordercolor: 'rgb(147, 51, 234)',
+            borderwidth: 1,
+            ax: 0,
+            ay: -40
+        },
+        {
+            x: Q3,
+            y: 0.6,
+            text: `<b>Q₃</b><br>${Q3.toFixed(2)}`,
+            showarrow: true,
+            arrowhead: 4,
+            arrowcolor: 'rgb(21, 128, 61)',
+            arrowwidth: 2,
+            font: { size: 11, color: 'rgb(21, 128, 61)' },
+            bgcolor: 'rgba(134, 239, 172, 0.9)',
+            bordercolor: 'rgb(21, 128, 61)',
+            borderwidth: 1,
+            ax: -20,
+            ay: -30
+        },
+        
+        // Anotación de RI centrada en la parte inferior
+        {
+            x: (Q1 + Q3) / 2,
+            y: -1.3,
+            text: `<b>RI = ${IQR.toFixed(2)}</b>`,
+            showarrow: false,
+            font: { size: 13, color: 'rgb(75, 85, 99)' },
+            bgcolor: 'rgba(255, 255, 255, 0.95)',
+            bordercolor: 'rgb(75, 85, 99)',
+            borderwidth: 2
+        }
+    ];
+    
+    const layout = {
+        title: {
+            text: '<b>Diagrama de Caja y Bigotes con Límites y Barreras Detalladas</b>',
+            font: { size: 18 }
+        },
+        xaxis: {
+            title: {
+                text: '<b>Valores</b>',
+                font: { size: 14 }
+            },
+            showgrid: true,
+            gridcolor: 'rgba(156, 163, 175, 0.3)',
+            range: [minVal, maxVal],
+            zeroline: false
+        },
+        yaxis: {
+            title: {
+                text: '<b>Distribución</b>',
+                font: { size: 14 }
+            },
+            showgrid: false,
+            zeroline: false,
+            range: [-yRange, yRange]
+        },
+        height: 600,
+        margin: { t: 100, b: 120, l: 80, r: 180 },
+        showlegend: true,
+        legend: {
+            x: 1.02,
+            y: 0.98,
+            bgcolor: 'rgba(255, 255, 255, 0.95)',
+            bordercolor: 'rgba(0, 0, 0, 0.2)',
+            borderwidth: 1,
+            font: { size: 11 },
+            xanchor: 'left'
+        },
+        annotations: annotations,
+        plot_bgcolor: 'rgba(249, 250, 251, 0.5)',
+        paper_bgcolor: 'white'
+    };
+    
+    const config = {
+        responsive: true,
+        displayModeBar: true,
+        modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+        displaylogo: false
+    };
+    
+    const chartElement = document.getElementById('enhancedBoxplotChart');
+    if (chartElement) {
+        Plotly.newPlot('enhancedBoxplotChart', traces, layout, config);
     }
 }
 
