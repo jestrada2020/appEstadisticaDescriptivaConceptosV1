@@ -27,6 +27,14 @@
         </div>
         
         <nav class="sidebar-menu">
+            <a class="menu-item" onclick="showAppGuide()" id="menu-app-guide">
+                <i class="fas fa-info-circle menu-icon"></i>
+                Guía de la Aplicación
+            </a>
+            <a class="menu-item" onclick="openCalculatorTutorial()" id="menu-calculator-tutorial">
+                <i class="fas fa-calculator menu-icon"></i>
+                Aprendo a manejar la calculadora
+            </a>
             <a class="menu-item active" onclick="showSection('input-section')" id="menu-input">
                 <i class="fas fa-keyboard menu-icon"></i>
                 Ingreso de Datos
@@ -1439,6 +1447,120 @@
                             <div id="pieChart2" style="height: 400px;"></div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Guía de la Aplicación -->
+    <div id="appGuideModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-graduation-cap mr-2"></i>Guía Didáctica: Estadística Descriptiva</h2>
+                <span class="close-modal" onclick="hideAppGuide()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="guide-intro">
+                    <h3>🎯 Propósito Educativo</h3>
+                    <p>Esta aplicación está diseñada como una herramienta pedagógica integral para el aprendizaje progresivo de la estadística descriptiva, siguiendo un orden temático estructurado que facilita la comprensión conceptual y práctica.</p>
+                </div>
+
+                <div class="thematic-order">
+                    <h3>📚 Orden Temático y Contenidos</h3>
+                    
+                    <div class="section-guide">
+                        <h4><i class="fas fa-calculator text-blue-600"></i> 1. Aprendo a manejar la calculadora</h4>
+                        <p><strong>Propósito:</strong> Preparación técnica para el manejo eficiente de calculadoras científicas Casio.</p>
+                        <p><strong>Ventaja educativa:</strong> Reduce errores de cálculo y aumenta la confianza en procedimientos matemáticos.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-keyboard text-green-600"></i> 2. Ingreso de Datos</h4>
+                        <p><strong>Propósito:</strong> Aprender la correcta captura y validación de datos estadísticos.</p>
+                        <p><strong>Ventaja educativa:</strong> Desarrolla habilidades de organización y preparación de datos para análisis.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-table text-purple-600"></i> 3. Tablas de Frecuencia</h4>
+                        <p><strong>Propósito:</strong> Comparar métodos de agrupación de datos (simple vs. agrupada).</p>
+                        <p><strong>Ventaja educativa:</strong> Comprende cuándo y cómo usar diferentes tipos de distribuciones.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-info-circle text-orange-600"></i> 4. Estadísticas Básicas</h4>
+                        <p><strong>Propósito:</strong> Calcular e interpretar medidas de tendencia central y dispersión.</p>
+                        <p><strong>Ventaja educativa:</strong> Base fundamental para todos los análisis estadísticos posteriores.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-chart-line text-red-600"></i> 5. Cuartiles y Outliers</h4>
+                        <p><strong>Propósito:</strong> Identificar la posición relativa de datos y valores atípicos.</p>
+                        <p><strong>Ventaja educativa:</strong> Desarrolla capacidad de análisis crítico de datos.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-chart-bar text-indigo-600"></i> 6-10. Visualizaciones Gráficas</h4>
+                        <p><strong>Propósito:</strong> Representar datos mediante histogramas, diagramas de caja, gráficas combinadas y polígonos.</p>
+                        <p><strong>Ventaja educativa:</strong> Facilita la interpretación visual y comunicación de resultados.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-graduation-cap text-yellow-600"></i> 11-12. Tutoriales Paso a Paso</h4>
+                        <p><strong>Propósito:</strong> Detallar procedimientos de cálculo manual para cuartiles y gráficos circulares.</p>
+                        <p><strong>Ventaja educativa:</strong> Refuerza el aprendizaje conceptual y metodológico.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-expand-arrows-alt text-teal-600"></i> 13. Teoría de Dispersión</h4>
+                        <p><strong>Propósito:</strong> Profundizar en medidas de variabilidad y coeficiente de variación.</p>
+                        <p><strong>Ventaja educativa:</strong> Conecta teoría con aplicaciones prácticas.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-water text-blue-500"></i> 14. Simulación del Río</h4>
+                        <p><strong>Propósito:</strong> Aplicar conceptos estadísticos en un contexto real y práctico.</p>
+                        <p><strong>Ventaja educativa:</strong> Demuestra la utilidad de la estadística en la toma de decisiones.</p>
+                    </div>
+
+                    <div class="section-guide">
+                        <h4><i class="fas fa-ruler-combined text-gray-600"></i> 15. Análisis Avanzado de Outliers</h4>
+                        <p><strong>Propósito:</strong> Técnicas avanzadas de detección y clasificación de valores atípicos.</p>
+                        <p><strong>Ventaja educativa:</strong> Prepara para análisis estadístico más sofisticado.</p>
+                    </div>
+                </div>
+
+                <div class="educational-advantages">
+                    <h3>🎓 Ventajas para Procesos de Clase y Evaluación</h3>
+                    <div class="advantages-grid">
+                        <div class="advantage-item">
+                            <h4><i class="fas fa-users text-blue-600"></i> Para Clases</h4>
+                            <ul>
+                                <li>Aprendizaje visual e interactivo</li>
+                                <li>Progresión temática estructurada</li>
+                                <li>Ejemplos prácticos inmediatos</li>
+                                <li>Verificación instantánea de cálculos</li>
+                            </ul>
+                        </div>
+                        <div class="advantage-item">
+                            <h4><i class="fas fa-clipboard-check text-green-600"></i> Para Evaluación</h4>
+                            <ul>
+                                <li>Autoevaluación de procedimientos</li>
+                                <li>Comparación de métodos</li>
+                                <li>Validación de resultados</li>
+                                <li>Desarrollo de competencias digitales</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="usage-tips">
+                    <h3>💡 Recomendaciones de Uso</h3>
+                    <ol>
+                        <li><strong>Secuencial:</strong> Seguir el orden establecido para construcción progresiva del conocimiento</li>
+                        <li><strong>Práctica:</strong> Usar datos reales en cada sección para mayor significatividad</li>
+                        <li><strong>Comparativa:</strong> Utilizar la sección "Ver Todo" para análisis integral</li>
+                        <li><strong>Reflexiva:</strong> Analizar diferencias entre métodos manuales y automáticos</li>
+                    </ol>
                 </div>
             </div>
         </div>

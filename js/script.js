@@ -1435,6 +1435,43 @@ function toggleSidebar() {
     }
 }
 
+function openCalculatorTutorial() {
+    const tutorialUrl = 'https://jestrada2020.github.io/AprendoMenjoCalculadoraCasioV1/';
+    const windowFeatures = 'width=1200,height=800,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no';
+    window.open(tutorialUrl, 'calculatorTutorial', windowFeatures);
+}
+
+function showAppGuide() {
+    const modal = document.getElementById('appGuideModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function hideAppGuide() {
+    const modal = document.getElementById('appGuideModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+// Close modal when clicking outside of it
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('appGuideModal');
+    if (modal && event.target === modal) {
+        hideAppGuide();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        hideAppGuide();
+    }
+});
+
 // Variables globales para el boxplot mejorado
 let enhancedData = [];
 let enhancedStats = {};
